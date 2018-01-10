@@ -12,7 +12,7 @@ class Subgrid(object):
         for l in lines[start_line:start_line+3]:
             cases = l[start_col:start_col+3]
             self.cases.extend(cases)
-            for c in cases: c.subgrid = self
+            for c in cases: c.setSubgrid(self)
 
     def get_values(self):
         return [c.value for c in self.cases]
