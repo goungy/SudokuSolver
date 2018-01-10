@@ -36,6 +36,9 @@ class Case(object):
     def reset_cell(self):
         self.value = 0
 
+    def setSubgrid(self, subgrid):
+        self.subgrid = subgrid
+
     def __str__(self):
         return str(self.value)
 
