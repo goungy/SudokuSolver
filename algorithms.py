@@ -1,5 +1,9 @@
 __author__ = 'jdubois'
 
+
+def countCellValueInList(cellValue, cellList):
+    return sum( 1 for cell in cellList if cell.value == cellValue )
+
 class Solver(object):
 
     @staticmethod
@@ -35,7 +39,8 @@ class Solver(object):
                 #putting chosen value in chosen cell
                 grille.fill_empty_cell_with_value(c,p)
                 # If chosen value does not respect sudoku: stopping recusrion
-                if not Solver.test_grid_respect_sudoku_rules(grille,debug = False):
+                validGrid = Solver.test_grid_respect_sudoku_rules(grille,c,debug = False)
+                if not validGrid:
                     #print("Sudoku rules not respected, stopping recursion")
                     pass
                 else:
@@ -50,45 +55,36 @@ class Solver(object):
                         #list_.append([c.line,c.column])
                         cleared_ordered_cells = list(filter(lambda val: val != c, ordered_cells))
 
-                        if Solver.try_to_fill_randomly(grille, recursion = recursion + 1, list_ = list_, ordered_cells = cleared_ordered_cells ) == -1:
+                        retSolverCode = Solver.try_to_fill_randomly(grille, recursion = recursion + 1, list_ = list_, ordered_cells = cleared_ordered_cells )
+                        #Either recursion was unable to fill grid == -1
+                        if retSolverCode == -1:
                             # if return code == -1 then we tried all possibilities below and got no solution
                             #print("No more possibility below",c.line,c.column,"for possibility",p)
                             #list_.remove([c.line,c.column])
                             pass
-                        elif grille.isFilled():
-                            # Maybe we filled grid with recursion: then we have one possibility
+                        # or retCode != -1 => ==0 => gridfilled
+                        else:
+                            # We filled grid with recursion: then we have one possibility
                             return 0
-                # if no return has been encountered, then we must empty the current cell and
+                # if no return has been encountered, then we must empty the current cell
                 grille.empty_cell(c)
             #print("No more possibilities for",c.line,c.column)
             # We have tried all possibilities, and so we signal it to the caller function
             return -1
 
-    def test_grid_respect_sudoku_rules(grille, debug = False):
-        for idx,l in enumerate(grille.lines):
-            l_values = list([c.value for c in l])
-            l_without_zeros = list(filter(lambda val: val != 0, l_values))
-            if len(l_without_zeros) > len(set(l_without_zeros)): return False
-            if debug:
-                print("Line",idx)
-                print(str(l_without_zeros))
-                print(str(set(l_without_zeros)))
-        for idx,l in enumerate(grille.columns):
-            l_values = list([c.value for c in l])
-            l_without_zeros = list(filter(lambda val: val != 0, l_values))
-            if len(l_without_zeros) > len(set(l_without_zeros)): return False
-            if debug:
-                print("Column",idx)
-                print(str(l_without_zeros))
-                print(str(set(l_without_zeros)))
-        for idxl,l_s in enumerate(grille.subgrids):
-            for idxc,c_s in enumerate(l_s):
-                l_values = list([c.value for c in c_s.cases])
-                l_without_zeros = list(filter(lambda val: val != 0, l_values))
-                if len(l_without_zeros) > len(set(l_without_zeros)): return False
-                if debug:
-                    print("Subgrid",idxl,idxc)
-                    print(str(l_without_zeros))
-                    print(str(set(l_without_zeros)))
-        return True
-        pass
+    def test_grid_respect_sudoku_rules(grille, cell, debug = False):
+        cellValue = cell.value
+
+        lineNumber = cell.line
+        line = grille.lines[lineNumber]
+        cellValueCountLine = countCellValueInList(cellValue, line)
+        if cellValueCountLine != 1: return False
+
+        columnNumber = cell.column
+        column = grille.columns[columnNumber]
+        cellValueCountColumn = countCellValueInList(cellValue, column)
+        if cellValueCountColumn != 1: return False
+
+        subgrid = cell.subgrid.cases
+        cellValueCountSubgrid = countCellValueInList(cellValue, subgrid)
+        return cellValueCountSubgrid == 1
