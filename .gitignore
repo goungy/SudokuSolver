@@ -6,3 +6,4 @@
 .idea/misc.xml
 .idea/encodings.xml
 .idea/scopes/scope_settings.xml
+*.pyc
