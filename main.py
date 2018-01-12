@@ -2,7 +2,7 @@ __author__ = 'jdubois'
 
 from grid import SudokuGrid
 from gui import Gui
-from algorithms import Solver
+import algorithms
 
 import time
 
@@ -25,7 +25,7 @@ print("Displaying original grid")
 g.display(grille)
 
 deductionStartTime = time.time()
-Solver.deduction_solve(grille)
+algorithms.deduction_solve(grille)
 deductionEndTime = time.time()
 
 print("Displaying grid after first logical deductions")
@@ -34,14 +34,15 @@ g.display(grille)
 #print("overall possibilities:",sum([len(cell.possibilities) for cell in grille.empty_cells],0),"for a total of",len(grille.empty_cells))
 
 ordered_cells = sorted(grille.empty_cells, key = lambda cell: len(cell.possibilities))
+randomStartTime = time.time()
 if len(ordered_cells) > 0:
     print("Trying remaining possibilities on empty cells")
-    randomStartTime = time.time()
-    Solver.try_to_fill_randomly(grille, ordered_cells = ordered_cells)
-    randomFillEndTime = time.time()
+    algorithms.try_to_fill_randomly(grille, ordered_cells = ordered_cells)
+randomFillEndTime = time.time()
 
 if grille.isFilled():
     print("Displaying final grid")
     g.display(grille)
 
+print("It took " + str(deductionEndTime -  deductionStartTime) + " to fill the grid by deduction")
 print("It took " + str(randomFillEndTime -  randomStartTime) + " to randomly fill the grid")

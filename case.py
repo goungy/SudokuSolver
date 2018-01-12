@@ -2,9 +2,9 @@ __author__ = 'jdubois'
 
 class Case(object):
 
-    def __init__(self, line, column, value = 0):
-        self.line = line
-        self.column = column
+    def __init__(self, value = 0):
+        self.cellLine = None
+        self.cellColumn = None
         self.value = value
         self.subgrid = None
         self.possibilities = set([i for i in range(1,10)])
@@ -20,14 +20,18 @@ class Case(object):
     def remove_possibilities(self, some_values):
         self.possibilities = self.possibilities.difference(some_values)
 
-    def fill_cell_if_possible(self, values_in_line, values_in_column, values_in_subgrid):
-        self.remove_possibilities(values_in_line)
-        self.remove_possibilities(values_in_column)
-        self.remove_possibilities(values_in_subgrid)
+    def updatePossibilities(self):
+        self.remove_possibilities(self.cellLine.get_values())
+        self.remove_possibilities(self.cellColumn.get_values())
+        self.remove_possibilities(set(self.subgrid.get_values()))
+
+    def fill_cell_if_possible(self):
 
         if len(self.possibilities) == 1:
-            print('found a value to put @ ', self.line, self.column, self.possibilities)
+            print('found a value to put @ ', self.cellLine.id, self.cellColumn.id, self.possibilities)
             self.put_value(self.possibilities.pop())
+            return True
+        return False
 
     def put_value(self, value):
         if value not in range(1,10): raise Exception("Forbidden to put a value not in range 1-9")
@@ -38,6 +42,12 @@ class Case(object):
 
     def setSubgrid(self, subgrid):
         self.subgrid = subgrid
+
+    def setLine(self, cellLine):
+        self.cellLine = cellLine
+
+    def setColumn(self, cellColumn):
+        self.cellColumn = cellColumn
 
     def __str__(self):
         return str(self.value)

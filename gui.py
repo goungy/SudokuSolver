@@ -26,9 +26,7 @@ class Gui(object):
         self.display_top_line()
         for nb_line,l in enumerate(lines):
             print(str(nb_line) + "   |",end='')
-            for nb_col,c in enumerate(l):
-                if c.value: print(' ' + str(c.value) + ' ' +'|',end='')
-                else: print('   ' +'|',end='')
+            l.display()
             print()
             if nb_line == 8: self.display_top_line()
             elif (nb_line + 1) % 3 == 0: self.display_strong_line()

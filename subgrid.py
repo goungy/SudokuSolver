@@ -10,7 +10,7 @@ class Subgrid(object):
         start_line = line * 3
         start_col = column * 3
         for l in lines[start_line:start_line+3]:
-            cases = l[start_col:start_col+3]
+            cases = [ l.getCell(idx) for idx in range(start_col,start_col+3) ]
             self.cases.extend(cases)
             for c in cases: c.setSubgrid(self)
 
